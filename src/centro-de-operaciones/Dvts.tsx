@@ -1,7 +1,6 @@
+import { AmtexHeader, GridBackground } from '@/components/ui';
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import {
-  Dimensions,
-  Image,
   StatusBar,
   StyleSheet,
   Text,
@@ -20,9 +19,6 @@ type DvtsProps = {
   };
 };
 
-const LOGO = require('../../assets/images/imagenes/logo1.png');
-const { width, height } = Dimensions.get('window');
-
 const C = {
   bg: '#f0f2f5',
   white: '#ffffff',
@@ -39,48 +35,15 @@ const C = {
   shadow: 'rgba(21,101,192,0.12)',
 };
 
-const GRID = 28;
-const COLS = Math.ceil(width / GRID) + 1;
-const ROWS = Math.ceil(height / GRID) + 1;
-
-function Grid() {
-  return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      {Array.from({ length: ROWS }).map((_, i) => (
-        <View key={`h-${i}`} style={[styles.line, styles.lineH, { top: i * GRID }]} />
-      ))}
-      {Array.from({ length: COLS }).map((_, i) => (
-        <View key={`v-${i}`} style={[styles.line, styles.lineV, { left: i * GRID }]} />
-      ))}
-    </View>
-  );
-}
-
 export default function Dvts({ navigation, route }: DvtsProps) {
   const nombre = route?.params?.nombre ?? 'Operario';
 
   return (
-    <View style={styles.root}>
+    <GridBackground>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
-      <View style={styles.bgBase} />
-      <Grid />
-      <View style={styles.orbTop} />
-      <View style={styles.accentTR} />
 
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <View style={styles.logoWrap}>
-            <View style={styles.logoBox}>
-              <Image source={LOGO} style={styles.logo} resizeMode="contain" />
-            </View>
-            <Text style={styles.brandName}>AMTEX</Text>
-          </View>
-
-          <View style={styles.headerTextWrap}>
-            <Text style={styles.headerLabel}>BIENVENIDO</Text>
-            <Text style={styles.headerTitle}>{nombre}</Text>
-          </View>
-        </View>
+        <AmtexHeader name={nombre} />
 
         <View style={styles.panel}>
           <View style={styles.panelHeader}>
@@ -133,7 +96,7 @@ export default function Dvts({ navigation, route }: DvtsProps) {
           </View>
         </View>
       </SafeAreaView>
-    </View>
+    </GridBackground>
   );
 }
 

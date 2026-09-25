@@ -1,9 +1,9 @@
+import { AmtexLogo, GridBackground } from '@/components/ui';
 import { router } from 'expo-router';
 import { useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
   Dimensions,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -277,29 +277,16 @@ export default function LoginScreen({ navigation, onRegister }: LoginScreenProps
   };
 
   return (
-    <KeyboardAvoidingView
-      style={s.root}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <GridBackground>
+      <KeyboardAvoidingView
+        style={s.root}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
-
-      <View style={s.bgBase} />
-      <Grid />
-      <View style={s.orbTop} />
-      <View style={s.accentTR} />
 
       {/* ── Header: logo real + wordmark ── */}
       <View style={s.header}>
-        <View style={s.iconBox}>
-          <View style={s.iconShine} />
-          {/* ─── LOGO DE LA EMPRESA ─────────────────── */}
-          <Image
-            source={require('../../assets/images/imagenes/logo1.png')}
-            style={s.logoImg}
-            resizeMode="contain"
-          />
-          {/* ──────────────────────────────────────────── */}
-        </View>
+        <AmtexLogo size={72} />
         <View style={s.wordmark}>
           <Text style={s.brandName}>AMTEX</Text>
           <Text style={s.brandSub}>OPERACIONES DE PRODUCCIÓN</Text>
@@ -385,7 +372,8 @@ export default function LoginScreen({ navigation, onRegister }: LoginScreenProps
         </ScrollView>
       </KeyboardAvoidingView>
 
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </GridBackground>
   );
 }
 

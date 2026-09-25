@@ -1,6 +1,6 @@
+import { AmtexHeader, GridBackground } from '@/components/ui';
 import {
   Dimensions,
-  Image,
   StatusBar,
   StyleSheet,
   Text,
@@ -26,8 +26,6 @@ type HomeProps = {
 };
 
 // ─── LOGO OFICIAL AMTEX ──────────────────────────────────────
-const LOGO = require('../../assets/images/imagenes/logo1.png');
-
 const { width, height } = Dimensions.get('window');
 
 // ─── DESIGN TOKENS AMTEX ─────────────────────────────────────
@@ -70,31 +68,14 @@ export default function Home({ navigation, route }: HomeProps) {
   const nombre  = route?.params?.nombre  ?? 'Operario';
   const usuario = route?.params?.usuario ?? '';
   return (
-    <View style={s.root}>
+    <GridBackground>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
 
       {/* Fondo gris azulado — idéntico al Login y Splash */}
-      <View style={s.bgBase} />
-      <Grid />
-      <View style={s.orbTop} />
-      <View style={s.accentTR} />
-
       <SafeAreaView style={s.safeArea}>
 
         {/* ── App Bar: logo AMTEX + nombre operario ── */}
-        <View style={s.appBar}>
-          <View style={s.appLogo}>
-            <View style={s.appLogoBox}>
-              <View style={s.appLogoShine} />
-              <Image source={LOGO} style={s.appLogoImg} resizeMode="contain" />
-            </View>
-            <Text style={s.appLogoText}>AMTEX</Text>
-          </View>
-          <View style={s.appUser}>
-            <Text style={s.appUserLabel}>BIENVENIDO</Text>
-            <Text style={s.appUserName}>{nombre}</Text>
-          </View>
-        </View>
+        <AmtexHeader name={nombre} />
 
         {/* ── Contenido ── */}
         <View style={s.content}>
@@ -155,7 +136,7 @@ export default function Home({ navigation, route }: HomeProps) {
 
         </View>
       </SafeAreaView>
-    </View>
+    </GridBackground>
   );
 }
 

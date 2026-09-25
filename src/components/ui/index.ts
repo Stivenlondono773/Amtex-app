@@ -1,4 +1,5 @@
 export { AmtexButton } from './amtex-button';
+export { AmtexHeader } from './amtex-header';
 export { AmtexInput } from './amtex-input';
 export { AmtexLogo } from './amtex-logo';
 export { AmtexColors, AmtexSpacing } from './amtex-theme';
