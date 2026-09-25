@@ -10,7 +10,20 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Configurar Firebase
+
+   Copia `.env.example` como `.env` y reemplaza `EXPO_PUBLIC_FIREBASE_API_KEY` y
+   `EXPO_PUBLIC_FIREBASE_APP_ID` con los valores de la configuración de tu app web
+   en Firebase. En Firebase Console habilita Authentication > Sign-in method >
+   Email/Password y crea la base de datos de Firestore.
+
+   Las reglas están en `firestore.rules`. Para publicarlas usando Firebase CLI:
+
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+
+3. Start the app
 
    ```bash
    npx expo start

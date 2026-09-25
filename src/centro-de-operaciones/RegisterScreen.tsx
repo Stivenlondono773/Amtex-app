@@ -1,21 +1,22 @@
 import {
-    AmtexButton,
-    AmtexColors,
-    AmtexInput,
-    AmtexLogo,
-    GridBackground,
+  AmtexButton,
+  AmtexColors,
+  AmtexInput,
+  AmtexLogo,
+  GridBackground,
 } from '@/components/ui';
+import { firebaseErrorMessage, registerOperator } from '@/lib/firebase';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 type RegisterErrors = {
@@ -34,12 +35,15 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const validate = (): RegisterErrors => {
     const nextErrors: RegisterErrors = {};
     if (!nombre.trim()) nextErrors.nombre = 'Ingresa el nombre del operario';
     if (!usuario.trim()) nextErrors.usuario = 'Ingresa el número del operario';
     else if (usuario.trim().length < 3) nextErrors.usuario = 'Mínimo 3 caracteres';
+    else if (!/^[a-zA-Z0-9._-]+$/.test(usuario.trim())) nextErrors.usuario = 'Usa solo letras, números, punto, guion o guion bajo';
     if (password.length < 6) nextErrors.password = 'Mínimo 6 caracteres';
     if (!confirmarPassword) nextErrors.confirmarPassword = 'Confirma la contraseña';
     else if (password !== confirmarPassword) nextErrors.confirmarPassword = 'Las contraseñas no coinciden';
@@ -50,15 +54,30 @@ export default function RegisterScreen() {
     setter(value);
     setErrors(current => ({ ...current, [field]: undefined }));
     setRegistered(false);
+    setApiError('');
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const nextErrors = validate();
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    setRegistered(true);
-    setTimeout(() => router.back(), 900);
+    setLoading(true);
+    setApiError('');
+    try {
+      await registerOperator({
+        nombre,
+        numeroOperario: usuario,
+        password,
+        confirmarPassword,
+      });
+      setRegistered(true);
+      setTimeout(() => router.back(), 900);
+    } catch (error: unknown) {
+      setApiError(firebaseErrorMessage(error, 'No se pudo completar el registro'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,6 +99,7 @@ export default function RegisterScreen() {
             <View style={styles.handle} />
             <Text style={styles.title}>Crear cuenta</Text>
             <Text style={styles.subtitle}>Registra los datos del operario para continuar</Text>
+            {apiError ? <Text style={styles.error}>{apiError}</Text> : null}
 
             <AmtexInput
               label="NOMBRE COMPLETO"
@@ -116,7 +136,7 @@ export default function RegisterScreen() {
             />
 
             {registered ? <Text style={styles.success}>Registro completado. Regresando al inicio...</Text> : null}
-            <AmtexButton label="REGISTRAR OPERARIO" onPress={handleRegister} disabled={registered} />
+            <AmtexButton label={loading ? 'GUARDANDO...' : 'REGISTRAR OPERARIO'} onPress={handleRegister} disabled={registered || loading} />
 
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Text style={styles.backText}>¿Ya tienes cuenta? Iniciar sesión</Text>
@@ -140,6 +160,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '800', color: AmtexColors.textDark, marginBottom: 4 },
   subtitle: { fontSize: 12, color: AmtexColors.textMuted, marginBottom: 20 },
   success: { color: AmtexColors.success, fontSize: 11, fontWeight: '600', marginBottom: 12 },
+  error: { color: '#d32f2f', fontSize: 11, fontWeight: '600', marginBottom: 12 },
   backButton: { alignItems: 'center', paddingTop: 18 },
   backText: { color: AmtexColors.blueDark, fontSize: 12, fontWeight: '700' },
 });

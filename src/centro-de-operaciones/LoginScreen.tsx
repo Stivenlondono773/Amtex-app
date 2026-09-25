@@ -1,7 +1,9 @@
 import { AmtexLogo, GridBackground } from '@/components/ui';
+import { firebaseErrorMessage, loginOperator } from '@/lib/firebase';
 import { router } from 'expo-router';
 import { useRef, useState, type ReactNode } from 'react';
 import {
+  Alert,
   Animated,
   Dimensions,
   KeyboardAvoidingView,
@@ -230,29 +232,18 @@ export default function LoginScreen({ navigation, onRegister }: LoginScreenProps
     Animated.spring(btnScale, { toValue: 1, useNativeDriver: true, friction: 8 }).start();
   };
 
-  const USUARIOS_TEST = [
-    { usuario: 'admin', password: '123456', nombre: 'Administrador' },
-    { usuario: 'op001', password: '123456', nombre: 'Operario 1'    },
-    { usuario: 'op002', password: '123456', nombre: 'Operario 2'    },
-  ];
-
   const handleLogin = async () => {
     setApiError('');
     const e = validate();
     setErrors(e);
-    if (Object.keys(e).length > 0) return;
+    if (Object.keys(e).length > 0) {
+      Alert.alert('Datos incompletos', Object.values(e)[0]);
+      return;
+    }
 
     setLoading(true);
     try {
-      await new Promise(r => setTimeout(r, 1200));
-
-      const encontrado = USUARIOS_TEST.find(
-        u => u.usuario === usuario.trim() && u.password === password
-      );
-
-      if (!encontrado) {
-        throw new Error('Usuario o contraseña incorrectos');
-      }
+      const encontrado = await loginOperator(usuario, password);
 
       if (navigation && typeof navigation.replace === 'function') {
         navigation.replace('Home', {
@@ -269,8 +260,9 @@ export default function LoginScreen({ navigation, onRegister }: LoginScreenProps
         });
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      const message = firebaseErrorMessage(err, 'Error al iniciar sesión');
       setApiError(message);
+      Alert.alert('No se pudo iniciar sesión', message);
     } finally {
       setLoading(false);
     }
