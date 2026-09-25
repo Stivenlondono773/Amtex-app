@@ -12,6 +12,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 type DvtsProps = {
   navigation?: NavigationProp<ParamListBase>;
+  route?: {
+    params?: {
+      nombre?: string;
+      usuario?: string;
+    };
+  };
 };
 
 const LOGO = require('../../assets/images/imagenes/logo1.png');
@@ -50,7 +56,9 @@ function Grid() {
   );
 }
 
-export default function Dvts({ navigation }: DvtsProps) {
+export default function Dvts({ navigation, route }: DvtsProps) {
+  const nombre = route?.params?.nombre ?? 'Operario';
+
   return (
     <View style={styles.root}>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
@@ -69,8 +77,8 @@ export default function Dvts({ navigation }: DvtsProps) {
           </View>
 
           <View style={styles.headerTextWrap}>
-            <Text style={styles.headerLabel}>MÓDULO</Text>
-            <Text style={styles.headerTitle}>DVTS</Text>
+            <Text style={styles.headerLabel}>BIENVENIDO</Text>
+            <Text style={styles.headerTitle}>{nombre}</Text>
           </View>
         </View>
 

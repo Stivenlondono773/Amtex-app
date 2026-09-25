@@ -374,7 +374,7 @@ export default function LoginScreen({ navigation, onRegister }: LoginScreenProps
               <View style={s.footerLine} />
               <View style={s.footerMid}>
                 <Text style={s.footerText}>¿No tienes cuenta? </Text>
-                <TouchableOpacity onPress={onRegister}>
+                <TouchableOpacity onPress={onRegister ?? (() => router.push('/register'))}>
                   <Text style={s.footerLink}>Crear cuenta →</Text>
                 </TouchableOpacity>
               </View>

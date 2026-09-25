@@ -8,11 +8,16 @@ export default function HomeRoute() {
 
   const navigation = {
     navigate: (screen: string) => {
+      const sharedParams = {
+        nombre: params.nombre as string | undefined,
+        usuario: params.usuario as string | undefined,
+      };
+
       if (screen === 'Dvts') {
-        router.push('/dvts');
+        router.push({ pathname: '/dvts', params: sharedParams });
       }
       if (screen === 'Cgt') {
-        router.push('/cgt');
+        router.push({ pathname: '/cgt', params: sharedParams });
       }
     },
   };

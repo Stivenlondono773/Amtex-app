@@ -37,6 +37,15 @@ type InputFieldProps = {
   icon: ReactNode;
 };
 
+type CgtProps = {
+  route?: {
+    params?: {
+      nombre?: string;
+      usuario?: string;
+    };
+  };
+};
+
 const { width, height } = Dimensions.get('window');
 
 // ─── DESIGN TOKENS AMTEX ─────────────────────────────────────
@@ -45,10 +54,8 @@ const C = {
   white: '#ffffff',
   blue: '#1565c0',
   blueDark: '#0d47a1',
-  blueLight: '#1e88e5',
   blueXlight: '#e8f0fe',
   textDark: '#0d1825',
-  textMid: '#3d4a5c',
   textMuted: '#8a96a8',
   textHint: '#b0b8c4',
   border: '#e2e6ed',
@@ -62,6 +69,7 @@ const C = {
   danger: '#ef5350',
 };
 
+const LOGO = require('../../assets/images/imagenes/logo1.png');
 const GRID = 28;
 const COLS = Math.ceil(width / GRID) + 1;
 const ROWS = Math.ceil(height / GRID) + 1;
@@ -261,8 +269,9 @@ function InputField({
 }
 
 // ─── COMPONENTE CGT ───────────────────────────────────────────
-export default function Cgt() {
-  // ── Estado (lógica original preservada) ──────────────────
+export default function Cgt({ route }: CgtProps) {
+  const nombre = route?.params?.nombre ?? 'Operario';
+
   const [litrosdosi, setLitrosdosi] = useState('');
   const [kgdmfc, setKgmfc] = useState('');
   const [resultado, setResultado] = useState<number | null>(null);
@@ -270,7 +279,6 @@ export default function Cgt() {
   const [errors, setErrors] = useState<CgtErrors>({});
   const [desglose, setDesglose] = useState<DesgloseData | null>(null);
 
-  // Animación del botón
   const btnScale = useRef(new Animated.Value(1)).current;
   const resultAnim = useRef(new Animated.Value(0)).current;
 
@@ -287,7 +295,6 @@ export default function Cgt() {
       friction: 8,
     }).start();
 
-  // ── Validación ────────────────────────────────────────────
   const validate = (): CgtErrors => {
     const e: CgtErrors = {};
     const d1 = parseFloat(litrosdosi);
@@ -297,7 +304,6 @@ export default function Cgt() {
     return e;
   };
 
-  // ── Operación (lógica original exacta) ───────────────────
   const operacion = () => {
     const e = validate();
     setErrors(e);
@@ -310,17 +316,13 @@ export default function Cgt() {
       const dato1 = parseFloat(litrosdosi);
       const dato2 = parseFloat(kgdmfc);
 
-      // ── LÓGICA ORIGINAL ──────────────────────────────────
       const kilosmfc = dato2 * 1.272;
-      const litros = dato1;
-      const operacionTotal = (litros * kilosmfc) / 1000;
-      // ─────────────────────────────────────────────────────
+      const operacionTotal = (dato1 * kilosmfc) / 1000;
 
       setResultado(operacionTotal);
       setDesglose({ dato1, dato2, kilosmfc, operacionTotal });
       setLoading(false);
 
-      // Animar resultado
       Animated.spring(resultAnim, {
         toValue: 1,
         useNativeDriver: true,
@@ -332,27 +334,23 @@ export default function Cgt() {
     }, 600);
   };
 
-  // ─────────────────────────────────────────────────────────
   return (
     <KeyboardAvoidingView
       style={s.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
 
-      {/* Fondo */}
       <View style={s.bgBase} />
       <Grid />
       <View style={s.orbTop} />
       <View style={s.orbTR} />
-
-      {/* App Bar */}
 
       <View style={s.appBar}>
         <View style={s.appBrand}>
           <View style={s.logoBox}>
             <Image
               style={s.logoamtex}
-              source={require('../../assets/images/imagenes/logo1.png')}
+              source={LOGO}
             />
             <View style={s.logoShine} />
           </View>
@@ -360,12 +358,11 @@ export default function Cgt() {
         </View>
         <View style={s.appUser}>
           <Text style={s.appGreet}>BIENVENIDO</Text>
-          <Text style={s.appRole}>Operario</Text>
+          <Text style={s.appRole}>{nombre}</Text>
         </View>
       </View>
       <View style={s.appBarSep} />
 
-      {/* Contenido scrollable */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}>
@@ -373,7 +370,6 @@ export default function Cgt() {
           contentContainerStyle={s.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          {/* ── Título de pantalla ── */}
           <View style={s.pageHeader}>
             <Text style={s.pageTitle}>Dosificación MFC</Text>
             <Text style={s.pageSub}>
@@ -381,7 +377,6 @@ export default function Cgt() {
             </Text>
           </View>
 
-          {/* ── Card de parámetros ── */}
           <View style={s.card}>
             <View style={s.cardHeader}>
               <View style={s.cardAccentBar} />
@@ -414,7 +409,6 @@ export default function Cgt() {
               icon={<IconWeight />}
             />
 
-            {/* Fórmula hint */}
             <View style={s.formulaHint}>
               <Text style={s.formulaIcon}>∫</Text>
               <Text style={s.formulaText}>
@@ -423,7 +417,6 @@ export default function Cgt() {
             </View>
           </View>
 
-          {/* ── Botón Calcular ── */}
           <TouchableOpacity
             onPress={operacion}
             onPressIn={onPressIn}
@@ -448,7 +441,6 @@ export default function Cgt() {
             </Animated.View>
           </TouchableOpacity>
 
-          {/* ── Resultado ── */}
           <Animated.View
             style={[
               s.resultCard,
@@ -471,7 +463,7 @@ export default function Cgt() {
                     : 1,
               },
             ]}>
-            <View style={s.resultLeft}>
+            <View>
               <Text style={s.resultLabel}>RESULTADO DEL CÁLCULO</Text>
               <Text
                 style={[
@@ -499,7 +491,6 @@ export default function Cgt() {
             </View>
           </Animated.View>
 
-          {/* ── Desglose del cálculo (aparece tras calcular) ── */}
           {desglose && (
             <View style={s.desgloseCard}>
               <Text style={s.desgloseTitle}>DESGLOSE DEL CÁLCULO</Text>
@@ -630,8 +621,6 @@ const s = StyleSheet.create({
 
   // Scroll
   scroll: { paddingHorizontal: 24, paddingTop: 22, paddingBottom: 40 },
-
-  // Context chip
 
   // Page header
   pageHeader: { marginBottom: 20 },
@@ -832,7 +821,6 @@ const s = StyleSheet.create({
     shadowColor: C.blue,
     shadowOpacity: 0.1,
   },
-  resultLeft: {},
   resultLabel: {
     fontSize: 10,
     fontWeight: '700',
